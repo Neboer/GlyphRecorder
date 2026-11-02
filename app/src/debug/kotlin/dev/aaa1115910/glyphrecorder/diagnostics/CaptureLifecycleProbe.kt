@@ -13,6 +13,18 @@ import dev.aaa1115910.glyphrecorder.services.ScreenCaptureService
 object CaptureLifecycleProbe {
     private const val SERVICE = "glyph_capture_lifecycle_probe"
 
+    private fun assertDisplayCount(expected: Int) {
+        repeat(30) {
+            val process = ProcessBuilder("dumpsys", "display").start()
+            val count = process.inputStream.bufferedReader().use { it.readText() }
+                .split("DisplayDeviceInfo{\"scrcpy\"").size - 1
+            check(process.waitFor() == 0)
+            if (count == expected) return
+            Thread.sleep(100)
+        }
+        error("Expected $expected capture displays")
+    }
+
     @JvmStatic
     fun main(args: Array<String>) {
         Looper.prepareMainLooper()
@@ -37,9 +49,11 @@ object CaptureLifecycleProbe {
                         check(service.startScreenCapture())
                         // Restart while active also has to release the previous display.
                         check(service.startScreenCapture())
+                        assertDisplayCount(1)
                         Thread.sleep(100)
                         service.stopScreenCapture()
                         service.stopScreenCapture() // Idempotent stop
+                        assertDisplayCount(0)
                     }
                     println("CYCLES_PASSED")
                     runCatching { service.destroy() } // Process exit may close Binder before its reply.
