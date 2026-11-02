@@ -26,6 +26,14 @@ jobs:
         with:
           name: capture-lifecycle-apks
           path: app/build/outputs/apk/**/*.apk
+      - name: Prepare local signing tool
+        run: |
+          mkdir -p signing-tools
+          cp "$(find "$ANDROID_HOME/build-tools" -name apksigner.jar | sort -V | tail -1)" signing-tools/
+      - uses: actions/upload-artifact@v4
+        with:
+          name: local-signing-tool
+          path: signing-tools/apksigner.jar
       - uses: actions/upload-artifact@v4
         if: always()
         with:

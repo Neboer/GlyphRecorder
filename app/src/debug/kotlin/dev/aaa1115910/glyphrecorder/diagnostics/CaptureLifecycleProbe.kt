@@ -42,7 +42,7 @@ object CaptureLifecycleProbe {
                         service.stopScreenCapture() // Idempotent stop
                     }
                     println("CYCLES_PASSED")
-                    service.destroy()
+                    runCatching { service.destroy() } // Process exit may close Binder before its reply.
                     handler.post { kotlin.system.exitProcess(0) }
                 } else {
                     check(service.startScreenCapture())
