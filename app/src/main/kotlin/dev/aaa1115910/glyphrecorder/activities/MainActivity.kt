@@ -9,8 +9,6 @@ import androidx.activity.viewModels
 import androidx.lifecycle.AndroidViewModel
 import dev.aaa1115910.glyphrecorder.ui.GlyphRecorderTheme
 import dev.aaa1115910.glyphrecorder.ui.createFloatingToolbox
-import dev.aaa1115910.glyphrecorder.util.ShizukuConfig
-import dev.aaa1115910.glyphrecorder.util.Prefs
 import dev.aaa1115910.glyphrecorder.ui.screens.HomeScreen
 import kotlin.getValue
 
@@ -34,11 +32,4 @@ class MainActivity : ComponentActivity() {
 
 class FloatingWindowViewModel(application: Application) : AndroidViewModel(application) {
     val floatingWindow = createFloatingToolbox(application.applicationContext)
-
-    override fun onCleared() {
-        ShizukuConfig.stopShizuku()
-        floatingWindow.hide()
-        Prefs.working = false
-        super.onCleared()
-    }
 }
